@@ -1,4 +1,4 @@
-# 机器视觉第一讲  
+# opencv基础操作及图像的卷积与滤波 
 
 ## opencv基础操作
 1. namedWindow(const String& winname, int flags = WINDOW_AUTOSIZE)  
@@ -27,8 +27,10 @@ CV_RGB2GREY 将彩色图像转化为灰度图
 ---
 
 ## Mat
-计算机中的图像本质上是一个矩阵  
-![pic](C://Users/lenovo.Lenovo-PC/Desktop/ComputerVision/nature of image.png "nature of imag")  
+计算机中的图像本质上是一个矩阵, 下图为单位矩阵*255所形成的图像
+
+![nature of image][nature of image]  
+
 Mat是用于保存图像矩阵的数据结构
 1. 单通道  
 二值图像 0 255  
@@ -78,7 +80,58 @@ for (int i = 0; i < mat.rows; i++) {
 ```
 
 ### 高斯模糊
-高斯模糊的原理即将正态分布应用于图像处理
+高斯模糊的原理即将正态分布应用于图像处理  
+一维正态分布曲线:  
+![normal distribution curve][normal distribution curve]  
+
+由于图像为二维,所以需要二维正态分布,即高斯分布:  
+
+![Gaussian distribution][Gaussian distribution]  
+
+高斯分布公式:  
+
+![Gaussian function][Gaussian function]
+
+创建高斯核
+```c++
+cvtColor(frame, frame, CV_RGB2GRAY);
+
+double sigma = 5000;
+Mat gauss = Mat(5, 5, CV_64FC1);
+for (int i = -2; i < 3; i++) {
+	for (int j = -2; j < 3; j++) {
+		gauss.at<double>(i + 2 , j + 2) =  exp(-(i * i + j * j) / (2 * sigma * sigma));
+	}
+}
+```
+归一化
+```c++
+double gssum = sum(gauss).val[0];//求总和·
+cout << gssum << endl;
+for (int i = -2; i < 3; i++) {
+	for (int j = -2; j < 3; j++) {
+		gauss.at<double>(i + 2, j + 2)/= gssum;
+	}
+}
+```
+卷积
+```c++
+Mat dimg = Mat(frame.rows - 4, frame.cols - 4, CV_8UC1);
+for (int i = 2; i < frame.rows - 2; i++) {
+	for (int j = 2; j < frame.cols - 2; j++) {
+		int half = gauss.cols / 2;
+		double sum = 0;
+		for (int m = 0; m < gauss.rows; m++) {
+			for (int n = 0; n < gauss.cols; n++) {
+				sum += (double)(frame.at<uchar>(i + m - 2, j + n - 2))*gauss.at<double>(m, n);
+			}
+		}
+		dimg.at<uchar>(i - 2, j - 2) = (uchar)sum;
+	}
+}
+```
+
+
 
 ### 升采样
 ```c++
@@ -120,3 +173,8 @@ for (int i = 1; i < nrows - 1; i += 2) {
 	}
 }
 ```
+
+[nature of image]:http://oh1zr9i3e.bkt.clouddn.com/public/16-11-26/13922823.jpg  
+[normal distribution curve]:http://oh1zr9i3e.bkt.clouddn.com/public/16-11-26/87303803.jpg  
+[Gaussian distribution]:http://oh1zr9i3e.bkt.clouddn.com/public/16-11-26/87347346.jpg
+[Gaussian function]:http://oh1zr9i3e.bkt.clouddn.com/public/16-11-26/83043598.jpg
