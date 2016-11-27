@@ -1,4 +1,4 @@
-# opencv基础操作及图像的卷积与滤波 
+# opencv基础操作及图像的卷积与滤波
 
 ## opencv基础操作
 1. namedWindow(const String& winname, int flags = WINDOW_AUTOSIZE)  
@@ -41,8 +41,13 @@ RGB
 RGBA
 
 
-## 原理
-### 浮雕
+## 图像处理数学原理  
+
+[图像处理数学原理][yuanli]   
+
+### 简易浮雕效果  
+
+对矩阵横向求差分
 ```c++
 cvtColor(mat, mat, CV_RGB2GRAY);
 
@@ -54,7 +59,7 @@ for (int i = 0; i < mat.rows; i++) {
 }
 ```
 
-### 卷积之浮雕
+使用卷积对矩阵求差分
 
 ```c++
 cvtColor(mat, mat, CV_RGB2GRAY);
@@ -79,8 +84,16 @@ for (int i = 0; i < mat.rows; i++) {
 }
 ```
 
+效果  
+
+![difference][difference]  
+
+可见光线变化越强烈的地方越明显,这是由于这些地方对应矩阵数值差分数值差异较大
+
 ### 高斯模糊
-高斯模糊的原理即将正态分布应用于图像处理  
+
+高斯模糊的原理是将正态分布应用于图像处理 
+
 一维正态分布曲线:  
 ![normal distribution curve][normal distribution curve]  
 
@@ -134,6 +147,9 @@ for (int i = 2; i < frame.rows - 2; i++) {
 
 
 ### 升采样
+
+升采样就是图像的拉伸,最简单的方法是计算相邻像素值的平均并插进中间  
+
 ```c++
 cvtColor(mat, mat, CV_RGB2GRAY);
 
@@ -158,7 +174,8 @@ for (int i = 0; i < imgt.cols; i++) {
 
 ```
 
-### 降采样
+### 降采样  
+降采样即图像的缩小,只需按缩小的比例选取对应比例的像素即可
 ```c++
 cvtColor(mat, mat, CV_RGB2GRAY);
 
@@ -178,3 +195,5 @@ for (int i = 1; i < nrows - 1; i += 2) {
 [normal distribution curve]:http://oh1zr9i3e.bkt.clouddn.com/public/16-11-26/87303803.jpg  
 [Gaussian distribution]:http://oh1zr9i3e.bkt.clouddn.com/public/16-11-26/87347346.jpg
 [Gaussian function]:http://oh1zr9i3e.bkt.clouddn.com/public/16-11-26/83043598.jpg
+[yuanli]:http://www.cnblogs.com/cnzhao/p/5954475.html
+[difference]:http://oh1zr9i3e.bkt.clouddn.com/public/16-11-27/41959627.jpg
